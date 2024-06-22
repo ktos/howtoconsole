@@ -24,7 +24,7 @@ jobs:
       run: dotnet build --configuration Release
 
     - name: Publish
-      run: dotnet publish --configuration Release --runtime win-${{ matrix.platform }} --output ${{ github.workspace }}/publish/win-${{ matrix.platform }}
+      run: dotnet publish --configuration Release --runtime win-${{ matrix.platform }} --output ${{ github.workspace }}/publish/win-${{ matrix.platform }} HowtoConsole.csproj
 
     - name: Upload artifact for release job
       uses: actions/upload-artifact@v2
