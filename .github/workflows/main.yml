@@ -63,8 +63,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.name }}
-          release_name: Release b${{ steps.tag.outputs.name }}
+          tag_name: b${{ steps.tag.outputs.name }}
+          name: Release b${{ steps.tag.outputs.name }}
           files: |
             ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
             ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
