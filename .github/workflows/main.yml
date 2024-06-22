@@ -36,6 +36,25 @@ jobs:
     needs: build_and_publish
     runs-on: ubuntu-latest
     steps:
+      - name: Clone
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine tag name
+        id: tag
+        shell: bash
+        run: |
+          BUILD_NUMBER="$(git rev-list --count HEAD)"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"
+          if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
+            echo "name=b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          else
+            SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
+            echo "name=${SAFE_NAME}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -43,9 +62,9 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v2
-        with:          
-          release_name: Release ${{ github.ref }}
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: Release b${{ steps.tag.outputs.name }}
           files: |
             ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
             ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
-
