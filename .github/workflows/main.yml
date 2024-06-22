@@ -61,5 +61,4 @@ jobs:
           tag_name: ${{ steps.tag.outputs.name }}
           name: Release ${{ steps.tag.outputs.name }}
           files: |
-            howtoconsole-artifacts/howtoconsole-win-x64.zip
-            howtoconsole-artifacts/howtoconsole-win-arm64.zip
+            howtoconsole-artifacts/howtoconsole-win*
