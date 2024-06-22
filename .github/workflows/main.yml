@@ -1,0 +1,61 @@
+name: Build and Release .NET Console Application
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_publish:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x64, arm64]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Publish
+      run: dotnet publish --configuration Release --runtime win-${{ matrix.platform }} --output ${{ github.workspace }}/publish/win-${{ matrix.platform }} HowtoConsole.csproj
+
+    - name: Upload artifact for release job
+      uses: actions/upload-artifact@v4
+      with:
+        name: howtoconsole-win-${{ matrix.platform }}
+        path: ${{ github.workspace }}/publish/win-${{ matrix.platform }}    
+
+  create_release:
+    needs: build_and_publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: howtoconsole-artifacts
+
+      - name: Release
+        uses: softprops/action-gh-release@v2        
+        with:
+          files: |
+            ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
+            ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
+
