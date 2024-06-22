@@ -27,10 +27,10 @@ jobs:
       run: dotnet publish --configuration Release --runtime win-${{ matrix.platform }} --output ${{ github.workspace }}/publish/win-${{ matrix.platform }} HowtoConsole.csproj
 
     - name: Upload artifact for release job
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: howtoconsole-win-${{ matrix.platform }}
-        path: ${{ github.workspace }}/publish/win-${{ matrix.platform }}
+        path: ${{ github.workspace }}/publish/win-${{ matrix.platform }}    
 
   create_release:
     needs: build_and_publish
@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -52,24 +52,10 @@ jobs:
         with:
           path: howtoconsole-artifacts
 
-      - name: Upload x64 Release Asset
-        id: upload-release-asset-x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v2        
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
-          asset_name: howto-win-x64.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
+          files: |
+            ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
+            ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
 
-      - name: Upload ARM64 Release Asset
-        id: upload-release-asset-arm64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
-          asset_name: howto-win-arm64.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
