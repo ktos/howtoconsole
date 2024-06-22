@@ -55,10 +55,19 @@ jobs:
         with:
           path: howtoconsole-artifacts
 
+      - name: Rename executables
+        id: rename
+        shell: bash
+        run: |
+          mv ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe ./howtoconsole-artifacts/howtoconsole-win-arm64/howto-${{ steps.tag.outputs.name }}-arm64.exe
+          mv ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe ./howtoconsole-artifacts/howtoconsole-win-x64/howto-${{ steps.tag.outputs.name }}-x64.exe
+          ls -lR
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.name }}
           name: Release ${{ steps.tag.outputs.name }}
           files: |
-            howtoconsole-artifacts/howtoconsole-win*
+            ./howtoconsole-artifacts/howtoconsole-win-arm64/*.exe
+            ./howtoconsole-artifacts/howtoconsole-win-x64/*.exe
