@@ -48,12 +48,7 @@ jobs:
         run: |
           BUILD_NUMBER="$(git rev-list --count HEAD)"
           SHORT_HASH="$(git rev-parse --short=7 HEAD)"
-          if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
-            echo "name=b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
-          else
-            SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
-            echo "name=${SAFE_NAME}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
-          fi
+          echo "name=b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -63,8 +58,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: b${{ steps.tag.outputs.name }}
+          tag_name: ${{ steps.tag.outputs.name }}
           name: Release b${{ steps.tag.outputs.name }}
           files: |
-            ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
-            ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
+            howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
+            howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
