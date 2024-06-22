@@ -36,25 +36,15 @@ jobs:
     needs: build_and_publish
     runs-on: ubuntu-latest
     steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: howtoconsole-artifacts
 
       - name: Release
-        uses: softprops/action-gh-release@v2        
-        with:
+        uses: softprops/action-gh-release@v2
+        with:          
+          release_name: Release ${{ github.ref }}
           files: |
             ./howtoconsole-artifacts/howtoconsole-win-x64/howto.exe
             ./howtoconsole-artifacts/howtoconsole-win-arm64/howto.exe
